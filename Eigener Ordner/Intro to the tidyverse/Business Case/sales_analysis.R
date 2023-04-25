@@ -162,7 +162,7 @@ sales_by_year_cat_1_tbl
 sales_by_year_cat_1_tbl %>%
   
   # Set up x, y, fill
-  ggplot(aes(x = year, y = sales, fill = category_1)) +
+  
   
   # Geometries
   geom_col() + # Run up to here to get a stacked bar plot
