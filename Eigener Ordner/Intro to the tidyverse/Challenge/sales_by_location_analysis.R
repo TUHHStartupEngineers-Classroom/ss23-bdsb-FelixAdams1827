@@ -115,18 +115,29 @@ sales_by_state_tbl %>%
 
 
 
-# 6.2 Sales by Year and Category 2 ----
+# 6.2 Sales by State and Year ----
 
 # Step 1 - Manipulate
+
+sales_by_state_year_tbl <- bike_orderlines_wrangled_tbl %>%
+  
+  # Select columns and add a year
+  select(order_date, total_price, state) %>%
+  mutate(year = year(order_date)) %>%
+  
+  # Group by and summarize year and main catgegory
+  group_by(year, state) %>%
+  summarise(sales = sum(total_price)) %>%
+  ungroup() %>%
+  
+  # Format $ Text
+  mutate(sales_text = scales::dollar(sales, big.mark = ".", 
+                                     decimal.mark = ",", 
+                                     prefix = "", 
+                                     suffix = " €"))
+
+sales_by_state_year_tbl  
 
 # Step 2 - Visualize
 
 
-
-# 7.0 Writing Files ----
-
-# 7.1 Excel ----
-
-# 7.2 CSV ----
-
-# 7.3 RDS ----
