@@ -8,11 +8,11 @@ author: "**Felix Adamaszek**, *Matr. Nr. 52505*"
 
 ## Revenue by state
 
-![Revenue by State](../../assets/img/graph.png)
+![Plot 1: Revenue by State](../../content/01_journal/01_tidyverse_files/figure-html/plot-1.png)
 
 ## Revenue by state and year
 
-![Revenue by state and year](../../content/01_journal/01_tidyverse_files/figure-html/plot-2.png)
+![Plot 2: Revenue by state and year](../../content/01_journal/01_tidyverse_files/figure-html/plot-2.png)
 
 # Source Code
 
