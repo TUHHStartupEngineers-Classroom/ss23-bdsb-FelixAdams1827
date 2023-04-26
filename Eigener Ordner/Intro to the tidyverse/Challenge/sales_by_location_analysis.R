@@ -115,15 +115,15 @@ sales_by_state_tbl %>%
 
 
 
-# 6.2 Sales by State and Year ----
+  # 6.2 Sales by State and Year ----
 
-# Step 1 - Manipulate
+  # Step 1 - Manipulate
 
-sales_by_state_year_tbl <- bike_orderlines_wrangled_tbl %>%
+          sales_by_state_year_tbl <- bike_orderlines_wrangled_tbl %>%
   
   # Select columns and add a year
-  select(order_date, total_price, state) %>%
-  mutate(year = year(order_date)) %>%
+          select(order_date, total_price, state) %>%
+          mutate(year = year(order_date)) %>%
   
   # Group by and summarize year and main catgegory
   group_by(year, state) %>%
@@ -140,4 +140,23 @@ sales_by_state_year_tbl
 
 # Step 2 - Visualize
 
-
+sales_by_state_year_tbl %>%
+  
+  # Set up x, y, fill
+  ggplot(aes(x = year, y = sales, fill = state)) +
+  
+  # Geometries
+  geom_col() + # Run up to here to get a stacked bar plot
+  
+  # Facet
+  facet_wrap(~ state) +
+  
+  # Formatting
+  scale_y_continuous(labels = scales::dollar_format(big.mark = ".", 
+                                                    decimal.mark = ",", 
+                                                    prefix = "", 
+                                                    suffix = " €")) +
+  labs(
+    title = "Revenue by state and year",
+    fill = "States"
+  )
