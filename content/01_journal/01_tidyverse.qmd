@@ -1,6 +1,6 @@
 ---
 title: "Tidyverse challenge"
-author: "Felix Adamaszek Matr. Nr. 52505"
+author: "**Felix Adamaszek**, *Matr. Nr. 52505*"
 ---
 
 ::: callout-note
@@ -30,8 +30,7 @@ superscript^2^ / subscript~2~
 # Images
 
 
-![Caption](/Users/felixadamaszek/Documents/GitHub/ss23-bdsb-FelixAdams1827/Eigener Ordner/Intro to the tidyverse/Bilder/Bildschirmfoto 2023-04-26 um 14.38.50.png)
-
+![Revenue by State](../../assets/img/graph.png)
 
 # Source Code
 
