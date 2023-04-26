@@ -1,42 +1,3 @@
----
-title: "Tidyverse challenge"
-author: "Felix Adamaszek Matr. Nr. 52505"
----
-
-::: callout-note
-Dies sind erst vorläufige Ergebnisse und noch nicht final zu bewerten
-:::
-
-# Text Formatting
-
-*italics* and **bold**
-
-superscript^2^ / subscript~2~
-
-~~strikethrough~~
-
-`verbatim code`
-
-> Blockquote
-
-# Headings
-
-## Header 2
-### Header 3
-#### Header 4
-##### Header 5
-###### Header 6
-
-# Images
-
-
-![Caption](/Users/felixadamaszek/Documents/GitHub/ss23-bdsb-FelixAdams1827/Eigener Ordner/Intro to the tidyverse/Bilder/Bildschirmfoto 2023-04-26 um 14.38.50.png)
-
-
-# Source Code
-
-
-```{r}
 # Intro to the tidyverse Challenge
 
 # 1.0 Load libraries ----
@@ -55,6 +16,9 @@ superscript^2^ / subscript~2~
           bike_orderlines_joined_tbl <- orderlines_tbl %>%
           left_join(bikes_tbl, by = c("product.id" = "bike.id")) %>%
           left_join(bikeshops_tbl, by = c("customer.id" = "bikeshop.id"))
+
+          bike_orderlines_joined_tbl %>% glimpse()
+
 
 # 4.0 Wrangling Data ----
 
@@ -99,32 +63,32 @@ superscript^2^ / subscript~2~
 
         sales_by_state_tbl
 
-```
-```{r plot, fig.width=13, fig.height=10}
-        
-        # Step 2 - Visualize the data
+
+
+    # Step 2 - Visualize the data
+
         sales_by_state_tbl %>%
-          
-          # Setup canvas with the columns year (x-axis) and sales (y-axis)
-          ggplot(aes(x = state, y = sales)) +
-          
-          
-          # Geometries
-          geom_col(fill = "#2DC6D6") + 
-          geom_label(aes(label = sales_text)) +
-          
-          # Hint
-          theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-          theme(axis.text.y = element_text(angle = 45, hjust = 1)) +
-          
-          # Formatting
-          scale_y_continuous(labels = scales::dollar_format(big.mark = ".", 
-                                                            decimal.mark = ",", 
-                                                            prefix = "", 
-                                                            suffix = " €")) +
-          labs(
-            title    = "Revenue by state",
-            x = "States",
-            y = "Revenue"
-          )
-        ```
+  
+    # Setup canvas with the columns year (x-axis) and sales (y-axis)
+        ggplot(aes(x = state, y = sales, fill = state)) +
+  
+  
+    # Geometries
+        geom_col(fill = "#2DC6D6") + 
+        geom_label(aes(label = sales_text)) + 
+        geom_smooth(method = "lm", se = FALSE) + 
+  
+    # Hint
+        theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  
+    # Formatting
+        scale_y_continuous(labels = scales::dollar_format(big.mark = ".", 
+                                                    decimal.mark = ",", 
+                                                    prefix = "", 
+                                                    suffix = " €")) +
+        labs(
+          title    = "Revenue by location",
+          subtitle = "Upward Trend",
+          x = "States", # Override defaults for x and y
+          y = "Revenue"
+        )
