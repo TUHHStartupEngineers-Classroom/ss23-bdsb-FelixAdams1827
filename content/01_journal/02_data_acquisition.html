@@ -284,6 +284,46 @@ Note
 <p>Challenge 2 - Scraping</p>
 </div>
 </div>
+<div class="cell" data-hash="02_data_acquisition_cache/html/unnamed-chunk-2_aa4945474acc61d1997e8b0fc1a32ede">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co">#Step 1 Packages laden</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a></span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="fu">library</span>(rvest)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>#&gt; 
+#&gt; Attaching package: 'rvest'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>#&gt; The following object is masked from 'package:readr':
+#&gt; 
+#&gt;     guess_encoding</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="co">#Step 2 Daten "scrappen" (Entscheidung für Rennräder)</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a></span>
+<span id="cb5-3"><a href="#cb5-3"></a>  url <span class="ot">&lt;-</span> <span class="st">"https://www.rosebikes.de/fahrr%C3%A4der/rennrad"</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a>  html <span class="ot">&lt;-</span> url <span class="sc">%&gt;%</span> </span>
+<span id="cb5-5"><a href="#cb5-5"></a>  <span class="fu">read_html</span>()</span>
+<span id="cb5-6"><a href="#cb5-6"></a></span>
+<span id="cb5-7"><a href="#cb5-7"></a>  Modellbezeichnung <span class="ot">&lt;-</span> html <span class="sc">%&gt;%</span> </span>
+<span id="cb5-8"><a href="#cb5-8"></a>  <span class="fu">html_nodes</span>(<span class="st">"h4.basic-headline__title"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-9"><a href="#cb5-9"></a>  <span class="fu">html_text</span>()</span>
+<span id="cb5-10"><a href="#cb5-10"></a></span>
+<span id="cb5-11"><a href="#cb5-11"></a>  Preis <span class="ot">&lt;-</span> html <span class="sc">%&gt;%</span> </span>
+<span id="cb5-12"><a href="#cb5-12"></a>  <span class="fu">html_nodes</span>(<span class="st">"div.catalog-category-bikes__price-title"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-13"><a href="#cb5-13"></a>  <span class="fu">html_text</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb5-14"><a href="#cb5-14"></a>  <span class="fu">parse_number</span>(<span class="at">locale =</span> <span class="fu">locale</span>(<span class="at">decimal_mark =</span> <span class="st">","</span>, <span class="at">grouping_mark =</span> <span class="st">"."</span>))</span>
+<span id="cb5-15"><a href="#cb5-15"></a></span>
+<span id="cb5-16"><a href="#cb5-16"></a><span class="co">#Step 3 Daten in lesbares Format überführen</span></span>
+<span id="cb5-17"><a href="#cb5-17"></a>  </span>
+<span id="cb5-18"><a href="#cb5-18"></a>Uebersichtstabelle <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(Modellbezeichnung, Preis)</span>
+<span id="cb5-19"><a href="#cb5-19"></a><span class="fu">print</span>(Uebersichtstabelle)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>#&gt;   Modellbezeichnung Preis
+#&gt; 1             XLITE  2999
+#&gt; 2       REVEAL PLUS  3999
+#&gt; 3            PRO SL  1099
+#&gt; 4            REVEAL  2499</code></pre>
+</div>
+</div>
 
 
 
@@ -536,7 +576,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
-<script>var lightboxQuarto = GLightbox({"selector":".lightbox","closeEffect":"zoom","loop":true,"descPosition":"bottom","openEffect":"zoom"});</script>
+<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","selector":".lightbox","descPosition":"bottom","loop":true,"closeEffect":"zoom"});</script>
 
 
 </body></html>
