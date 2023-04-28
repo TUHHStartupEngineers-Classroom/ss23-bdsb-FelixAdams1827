@@ -7,6 +7,8 @@ author: "**Felix Adamaszek**, *Matr. Nr. 52505*"
 Challenge 1 - API
 :::
 
+
+![Windgeschwindigkeiten in Hamburg](../../content/01_journal/02_data_acquisition_files/figure-html/unnamed-chunk-1-1.png)
 ```{r}
 #Step 1 Packages laden
 
