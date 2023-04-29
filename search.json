@@ -11,7 +11,7 @@
     "href": "content/01_journal/03_data_wrangling.html",
     "title": "Data Wrangling",
     "section": "",
-    "text": "Note\n\n\n\nYou can delete everything in here and start fresh."
+    "text": "Note\n\n\n\nFor answering the challenges reduced data set for the year 2014 was used."
   },
   {
     "objectID": "content/01_journal/04_data_visualization.html",
@@ -61,5 +61,26 @@
     "title": "My Lab Journal",
     "section": "How to use",
     "text": "How to use\n\nAccept the assignment and get your own github repo.\nBlog/journal what you are doing in R, by editing the .qmd files.\nSee the links page for lots of helpful links on learning R.\nChange everything to make it your own.\nMake sure to render you website everytime before you want to upload changes"
+  },
+  {
+    "objectID": "content/01_journal/03_data_wrangling.html#the-ten-us-companies-with-the-most-assigned-patents",
+    "href": "content/01_journal/03_data_wrangling.html#the-ten-us-companies-with-the-most-assigned-patents",
+    "title": "Data Wrangling",
+    "section": "\n2.1 The ten US companies with the most assigned patents",
+    "text": "2.1 The ten US companies with the most assigned patents\nCode\n\ndominance <- data %>% \n  select(organization, num_claims) %>% \n  group_by(organization) %>% \n  summarise(claims = sum(num_claims))\ndominance_cleaned <- dominance[dominance$organization != 'NA',]\n\ndominance_sorted <- dominance_cleaned[order(dominance_cleaned$claims,decreasing=TRUE),]\n\nCreating the Chart\n\nhead(dominance_sorted, n=10)"
+  },
+  {
+    "objectID": "content/01_journal/03_data_wrangling.html#the-ten-us-companies-with-the-most-new-granted-patents-for-august-2014",
+    "href": "content/01_journal/03_data_wrangling.html#the-ten-us-companies-with-the-most-new-granted-patents-for-august-2014",
+    "title": "Data Wrangling",
+    "section": "\n3.1 The ten US companies with the most new granted patents for August 2014",
+    "text": "3.1 The ten US companies with the most new granted patents for August 2014\nCode\n\naugust_2014 <- data[format.Date(data$date, \"%m\")==\"08\" & !is.na(data$date),] %>% \n  select(organization, num_claims) %>% \n  group_by(organization) %>% \n  summarise(claims = sum(num_claims))\n\naugust_2014_cleaned <- august_2014[august_2014$organization != 'NA',]\n\naugust_2014_sorted <- august_2014_cleaned[order(august_2014_cleaned$claims,decreasing=TRUE),]\n\nCreating the Chart\n\nhead(august_2014_sorted,n=10)"
+  },
+  {
+    "objectID": "content/01_journal/03_data_wrangling.html#top-ten-companies-worldwide-with-most-patents---top-5-uspto-tech-main-classes",
+    "href": "content/01_journal/03_data_wrangling.html#top-ten-companies-worldwide-with-most-patents---top-5-uspto-tech-main-classes",
+    "title": "Data Wrangling",
+    "section": "\n4.1 Top ten companies worldwide with most patents - top 5 USPTO tech main classes",
+    "text": "4.1 Top ten companies worldwide with most patents - top 5 USPTO tech main classes\nCode\n\ninno <- left_join(assignee, patent_assignee, by = c(\"id\" = \"assignee_id\"))\ninno <- left_join(inno, uspc, by = c(\"patent_id\" = \"patent_id\"))\n\n#> Warning in left_join(inno, uspc, by = c(patent_id = \"patent_id\")): Detected an unexpected many-to-many relationship between `x` and `y`.\n#> ℹ Row 1 of `x` matches multiple rows in `y`.\n#> ℹ Row 376875 of `y` matches multiple rows in `x`.\n#> ℹ If a many-to-many relationship is expected, set `relationship =\n#>   \"many-to-many\"` to silence this warning.\n\ninno_cleaned <- inno[!duplicated(inno$patent_id),]\ninno_cleaned_new <- inno_cleaned[inno_cleaned$id != 'NA',]\n\n#Create a filter\norgs <- head(dominance_sorted$organization, 10)\n\n#Apply Filter\ninno_orgs <- inno %>% \n  filter(organization %in% orgs) %>% \n  select(organization, mainclass_id) %>% \n  count(mainclass_id, sort = TRUE)\n\ninno_orgs_final <- inno_orgs[-1,] %>% \n  head(n=5)\n\ngetMainId <- function(x){\n  url <- sprintf('https://api.patentsview.org/uspc_mainclasses/query?q={\"uspc_mainclass_id\":%s}&f=[\"uspc_mainclass_title\"]',x[1])\n  resp <- GET(url)\n  content <- rawToChar(resp$content) %>% \n    fromJSON()\n  \n  class <- content[[\"uspc_mainclasses\"]][[1]]\n  return(class)\n}\n\nnames <- apply(inno_orgs_final,1,getMainId)\n\nCreating the Chart\n\ninno_orgs_final %>% \n  mutate(type = names) %>% \n  head(n=5)"
   }
 ]
