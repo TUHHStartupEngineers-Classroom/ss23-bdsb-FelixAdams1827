@@ -18,7 +18,7 @@
     "href": "content/01_journal/04_data_visualization.html",
     "title": "Data Visualization",
     "section": "",
-    "text": "Note\n\n\n\nYou can delete everything in here and start fresh."
+    "text": "library(tidyverse)\n\n#> ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──\n#> ✔ dplyr     1.1.2     ✔ readr     2.1.4\n#> ✔ forcats   1.0.0     ✔ stringr   1.5.0\n#> ✔ ggplot2   3.4.2     ✔ tibble    3.2.1\n#> ✔ lubridate 1.9.2     ✔ tidyr     1.3.0\n#> ✔ purrr     1.0.1     \n#> ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──\n#> ✖ dplyr::filter() masks stats::filter()\n#> ✖ dplyr::lag()    masks stats::lag()\n#> ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors\n\ncovid_data_tbl <- read_csv(\"https://covid.ourworldindata.org/data/owid-covid-data.csv\")\n\n#> Rows: 306118 Columns: 67\n#> ── Column specification ────────────────────────────────────────────────────────\n#> Delimiter: \",\"\n#> chr   (4): iso_code, continent, location, tests_units\n#> dbl  (62): total_cases, new_cases, new_cases_smoothed, total_deaths, new_dea...\n#> date  (1): date\n#> \n#> ℹ Use `spec()` to retrieve the full column specification for this data.\n#> ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.\n\ncountries <- covid_data_tbl %>%\n  group_by(location) %>% \n  group_split(.keep = TRUE)\n\n\n\nfilter <- c(\"Germany\", \"United States\", \"United Kingdom\", \"France\", \"Spain\")\n\ngetCountry <- function(x, country){\n  countries_select <- data.frame()\n  for(i in 1:length(x)){\n    if(x[[i]]$location[[1]] %in% country){\n      return (x[[i]])\n    } else {\n      next\n    }\n  }\n  return (countries_select)\n}\n\n\n\nselection <- getCountry(countries, c(\"Germany\")) %>% \n  rbind(getCountry(countries, c(\"United States\"))) %>% \n  rbind(getCountry(countries, c(\"United Kingdom\"))) %>% \n  rbind(getCountry(countries, c(\"France\"))) %>% \n  rbind(getCountry(countries, c(\"Spain\")))\n\n\n\nselection %>% \n  ggplot(aes(date, total_cases, color = location))+\n  geom_line(linewidth = 0.5) + \n  scale_y_continuous(labels = scales::comma) +\n  theme(\n    legend.position = \"bottom\",\n  ) + \n  labs(\n    title = \"Summe der Covid Faelle pro Land\",\n    subtitle = \"Trend zunehmend\",\n    x = \"Jahr\",\n    y = \"Summe der Faelle\",\n    color = \"Betrachtete Laender\",\n  )\n\n#> Warning: Removed 79 rows containing missing values (`geom_line()`)."
   },
   {
     "objectID": "content/01_journal/01_tidyverse.html",
@@ -82,5 +82,47 @@
     "title": "Data Wrangling",
     "section": "\n4.1 Top ten companies worldwide with most patents - top 5 USPTO tech main classes",
     "text": "4.1 Top ten companies worldwide with most patents - top 5 USPTO tech main classes\nCode\n\ninno <- left_join(assignee, patent_assignee, by = c(\"id\" = \"assignee_id\"))\ninno <- left_join(inno, uspc, by = c(\"patent_id\" = \"patent_id\"))\n\n#> Warning in left_join(inno, uspc, by = c(patent_id = \"patent_id\")): Detected an unexpected many-to-many relationship between `x` and `y`.\n#> ℹ Row 1 of `x` matches multiple rows in `y`.\n#> ℹ Row 376875 of `y` matches multiple rows in `x`.\n#> ℹ If a many-to-many relationship is expected, set `relationship =\n#>   \"many-to-many\"` to silence this warning.\n\ninno_cleaned <- inno[!duplicated(inno$patent_id),]\ninno_cleaned_new <- inno_cleaned[inno_cleaned$id != 'NA',]\n\n#Create a filter\norgs <- head(dominance_sorted$organization, 10)\n\n#Apply Filter\ninno_orgs <- inno %>% \n  filter(organization %in% orgs) %>% \n  select(organization, mainclass_id) %>% \n  count(mainclass_id, sort = TRUE)\n\ninno_orgs_final <- inno_orgs[-1,] %>% \n  head(n=5)\n\ngetMainId <- function(x){\n  url <- sprintf('https://api.patentsview.org/uspc_mainclasses/query?q={\"uspc_mainclass_id\":%s}&f=[\"uspc_mainclass_title\"]',x[1])\n  resp <- GET(url)\n  content <- rawToChar(resp$content) %>% \n    fromJSON()\n  \n  class <- content[[\"uspc_mainclasses\"]][[1]]\n  return(class)\n}\n\nnames <- apply(inno_orgs_final,1,getMainId)\n\nCreating the Chart\n\ninno_orgs_final %>% \n  mutate(type = names) %>% \n  head(n=5)"
+  },
+  {
+    "objectID": "content/01_journal/04_data_visualization.html#daten-importieren",
+    "href": "content/01_journal/04_data_visualization.html#daten-importieren",
+    "title": "Data Visualization",
+    "section": "\n2.1 Daten importieren\n",
+    "text": "2.1 Daten importieren\n\n\ncovid_data_tbl <- read_csv(\"https://covid.ourworldindata.org/data/owid-covid-data.csv\")\n\n#> Rows: 306118 Columns: 67\n#> ── Column specification ────────────────────────────────────────────────────────\n#> Delimiter: \",\"\n#> chr   (4): iso_code, continent, location, tests_units\n#> dbl  (62): total_cases, new_cases, new_cases_smoothed, total_deaths, new_dea...\n#> date  (1): date\n#> \n#> ℹ Use `spec()` to retrieve the full column specification for this data.\n#> ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message."
+  },
+  {
+    "objectID": "content/01_journal/04_data_visualization.html#entfernen-von-nicht-benötigten-daten",
+    "href": "content/01_journal/04_data_visualization.html#entfernen-von-nicht-benötigten-daten",
+    "title": "Data Visualization",
+    "section": "\n2.3 Entfernen von nicht benötigten Daten\n",
+    "text": "2.3 Entfernen von nicht benötigten Daten\n\n\ndata <- data[!grepl(\"World\", data$location),]\ndata <- data[!grepl(\"income\", data$location),]\ndata <- data[!grepl(\"Europe\", data$location),]\ndata <- data[!grepl(\"North America\", data$location),]\ndata <- data[!grepl(\"South America\", data$location),]\ndata <- data[!grepl(\"Asia\", data$location),]"
+  },
+  {
+    "objectID": "content/01_journal/04_data_visualization.html#importieren-der-karte",
+    "href": "content/01_journal/04_data_visualization.html#importieren-der-karte",
+    "title": "Data Visualization",
+    "section": "\n2.4 Importieren der Karte\n",
+    "text": "2.4 Importieren der Karte\n\n\nworld <- map_data(\"world\")"
+  },
+  {
+    "objectID": "content/01_journal/04_data_visualization.html#plot-der-karte-inklusive-daten",
+    "href": "content/01_journal/04_data_visualization.html#plot-der-karte-inklusive-daten",
+    "title": "Data Visualization",
+    "section": "\n2.5 Plot der Karte inklusive Daten\n",
+    "text": "2.5 Plot der Karte inklusive Daten\n\n\np <- ggplot() +\n  geom_map(data = world, map = world,\n           aes(x = long, y = lat, group = group, map_id=region),\n           fill = \"white\", colour = \"#7f7f7f\", linewidth = 0.5) +\n  \n  geom_map(data = data, map=world,\n           aes(fill=total_deaths, map_id=location, color = total_deaths),\n           colour=\"#7f7f7f\", linewidth=0.5) +\n  \n  scale_fill_continuous(low=\"red\", high=\"black\", guide=\"colorbar\") +\n  scale_y_continuous(breaks=c()) +\n  scale_x_continuous(breaks=c()) +\n  labs(title=\"Covid Sterblichkeit\", fill=\"legend\") +\n  theme_bw()\n\n#> Warning in geom_map(data = world, map = world, aes(x = long, y = lat, group =\n#> group, : Ignoring unknown aesthetics: x and y\n\np"
+  },
+  {
+    "objectID": "content/01_journal/04_data_visualization.html#daten-vorbereiten",
+    "href": "content/01_journal/04_data_visualization.html#daten-vorbereiten",
+    "title": "Data Visualization",
+    "section": "\n2.2 Daten vorbereiten\n",
+    "text": "2.2 Daten vorbereiten\n\n\ndata <- covid_data_tbl %>% \n  select(location, total_deaths) %>% \n  group_by(location) %>% \n  slice_max(order_by = total_deaths, n = 1) %>% \n  mutate(location = case_when(\n    \n    location == \"United Kingdom\" ~ \"UK\",\n    location == \"United States\" ~ \"USA\",\n    location == \"Democratic Republic of Congo\" ~ \"Democratic Republic of the Congo\",\n    TRUE ~ location\n    \n  )) %>%\n  distinct()"
+  },
+  {
+    "objectID": "content/01_journal/04_data_visualization.html#plot-der-karte",
+    "href": "content/01_journal/04_data_visualization.html#plot-der-karte",
+    "title": "Data Visualization",
+    "section": "\n2.5 Plot der Karte\n",
+    "text": "2.5 Plot der Karte\n\n\np <- ggplot() +\n  geom_map(data = world, map = world,\n           aes(x = long, y = lat, group = group, map_id=region),\n           fill = \"white\", colour = \"#7f7f7f\", linewidth = 0.5) +\n  \n  geom_map(data = data, map=world,\n           aes(fill=total_deaths, map_id=location, color = total_deaths),\n           colour=\"#7f7f7f\", linewidth=0.5) +\n  \n  scale_fill_continuous(low=\"red\", high=\"black\", guide=\"colorbar\") +\n  scale_y_continuous(breaks=c()) +\n  scale_x_continuous(breaks=c()) +\n  labs(title=\"Covid Sterblichkeit\", fill=\"legend\") +\n  theme_bw()\n\n#> Warning in geom_map(data = world, map = world, aes(x = long, y = lat, group =\n#> group, : Ignoring unknown aesthetics: x and y\n\np"
   }
 ]

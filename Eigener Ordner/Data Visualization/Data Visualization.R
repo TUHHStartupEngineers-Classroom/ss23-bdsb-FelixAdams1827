@@ -1,24 +1,15 @@
----
-title: "Data Visualization"
-author: "**Felix Adamaszek**, *Matr. Nr. 52505*"
----
-
-# **First Challenge**
-## **Importieren der benoetigten Daten**
-
-```{r}
+# First Challenge
 
 library(tidyverse)
+
+## Importieren der benoetigten Daten
+
 covid_data_tbl <- read_csv("https://covid.ourworldindata.org/data/owid-covid-data.csv")
 countries <- covid_data_tbl %>%
   group_by(location) %>% 
   group_split(.keep = TRUE)
 
-```
-
-## **Filtern der importierten Daten**
-
-```{r}
+## Filtern der importierten Daten
 filter <- c("Germany", "United States", "United Kingdom", "France", "Spain")
 
 getCountry <- function(x, country){
@@ -33,24 +24,15 @@ getCountry <- function(x, country){
   return (countries_select)
 }
 
-```
-
-## **Auswahl einzelner Länder**
-
-```{r}
-
+## Auswahl einzelner Laender
 selection <- getCountry(countries, c("Germany")) %>% 
   rbind(getCountry(countries, c("United States"))) %>% 
   rbind(getCountry(countries, c("United Kingdom"))) %>% 
   rbind(getCountry(countries, c("France"))) %>% 
   rbind(getCountry(countries, c("Spain")))
 
-
-```
   
-## **Darstellung als Graph**
-
-```{r} 
+## Darstellung als Graph
 selection %>% 
   ggplot(aes(date, total_cases, color = location))+
   geom_line(linewidth = 0.5) + 
@@ -66,20 +48,14 @@ selection %>%
     color = "Betrachtete Laender",
   )
 
-```
-
 # **Second Challenge**
 
-## **Daten importieren**
+## **Daten Importieren**
 
-```{r}
 covid_data_tbl <- read_csv("https://covid.ourworldindata.org/data/owid-covid-data.csv")
-
-```
 
 ## **Daten vorbereiten**
 
-```{r}
 data <- covid_data_tbl %>% 
   select(location, total_deaths) %>% 
   group_by(location) %>% 
@@ -94,11 +70,8 @@ data <- covid_data_tbl %>%
   )) %>%
   distinct()
 
-```
-
 ## **Entfernen von nicht benötigten Daten**
 
-```{r}
 data <- data[!grepl("World", data$location),]
 data <- data[!grepl("income", data$location),]
 data <- data[!grepl("Europe", data$location),]
@@ -106,18 +79,12 @@ data <- data[!grepl("North America", data$location),]
 data <- data[!grepl("South America", data$location),]
 data <- data[!grepl("Asia", data$location),]
 
-```
-
 ## **Importieren der Karte**
 
-```{r}
 world <- map_data("world")
 
-```
+## **Plot der Karte inklusive Daten**
 
-## **Plot der Karte**
-
-```{r}
 p <- ggplot() +
   geom_map(data = world, map = world,
            aes(x = long, y = lat, group = group, map_id=region),
@@ -135,4 +102,3 @@ p <- ggplot() +
 
 p
 
-```
