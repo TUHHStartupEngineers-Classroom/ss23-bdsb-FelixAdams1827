@@ -1,0 +1,104 @@
+# First Challenge
+
+library(tidyverse)
+
+## Importieren der benoetigten Daten
+
+covid_data_tbl <- read_csv("https://covid.ourworldindata.org/data/owid-covid-data.csv")
+countries <- covid_data_tbl %>%
+  group_by(location) %>% 
+  group_split(.keep = TRUE)
+
+## Filtern der importierten Daten
+filter <- c("Germany", "United States", "United Kingdom", "France", "Spain")
+
+getCountry <- function(x, country){
+  countries_select <- data.frame()
+  for(i in 1:length(x)){
+    if(x[[i]]$location[[1]] %in% country){
+      return (x[[i]])
+    } else {
+      next
+    }
+  }
+  return (countries_select)
+}
+
+## Auswahl einzelner Laender
+selection <- getCountry(countries, c("Germany")) %>% 
+  rbind(getCountry(countries, c("United States"))) %>% 
+  rbind(getCountry(countries, c("United Kingdom"))) %>% 
+  rbind(getCountry(countries, c("France"))) %>% 
+  rbind(getCountry(countries, c("Spain")))
+
+  
+## Darstellung als Graph
+selection %>% 
+  ggplot(aes(date, total_cases, color = location))+
+  geom_line(linewidth = 0.5) + 
+  scale_y_continuous(labels = scales::comma) +
+  theme(
+    legend.position = "bottom",
+  ) + 
+  labs(
+    title = "Summe der Covid Faelle pro Land",
+    subtitle = "Trend zunehmend",
+    x = "Jahr",
+    y = "Summe der Faelle",
+    color = "Betrachtete Laender",
+  )
+
+# **Second Challenge**
+
+## **Daten Importieren**
+
+covid_data_tbl <- read_csv("https://covid.ourworldindata.org/data/owid-covid-data.csv")
+
+## **Daten vorbereiten**
+
+data <- covid_data_tbl %>% 
+  select(location, total_deaths) %>% 
+  group_by(location) %>% 
+  slice_max(order_by = total_deaths, n = 1) %>% 
+  mutate(location = case_when(
+    
+    location == "United Kingdom" ~ "UK",
+    location == "United States" ~ "USA",
+    location == "Democratic Republic of Congo" ~ "Democratic Republic of the Congo",
+    TRUE ~ location
+    
+  )) %>%
+  distinct()
+
+## **Entfernen von nicht benötigten Daten**
+
+data <- data[!grepl("World", data$location),]
+data <- data[!grepl("income", data$location),]
+data <- data[!grepl("Europe", data$location),]
+data <- data[!grepl("North America", data$location),]
+data <- data[!grepl("South America", data$location),]
+data <- data[!grepl("Asia", data$location),]
+
+## **Importieren der Karte**
+
+world <- map_data("world")
+
+## **Plot der Karte inklusive Daten**
+
+p <- ggplot() +
+  geom_map(data = world, map = world,
+           aes(x = long, y = lat, group = group, map_id=region),
+           fill = "white", colour = "#7f7f7f", linewidth = 0.5) +
+  
+  geom_map(data = data, map=world,
+           aes(fill=total_deaths, map_id=location, color = total_deaths),
+           colour="#7f7f7f", linewidth=0.5) +
+  
+  scale_fill_continuous(low="red", high="black", guide="colorbar") +
+  scale_y_continuous(breaks=c()) +
+  scale_x_continuous(breaks=c()) +
+  labs(title="Covid Sterblichkeit", fill="legend") +
+  theme_bw()
+
+p
+

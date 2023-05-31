@@ -1,8 +1,83 @@
 ---
 title: "Data Acquisition"
-author: "Joschka Schwarz"
+author: "**Felix Adamaszek**, *Matr. Nr. 52505*"
 ---
 
 ::: callout-note
-You can delete everything in here and start fresh.
+Challenge 1 - API
 :::
+
+
+![Windgeschwindigkeiten in Hamburg](../../content/01_journal/02_data_acquisition_files/figure-html/unnamed-chunk-1-1.png)
+```{r}
+#Step 1 Packages laden
+
+      library(httr)
+      library(jsonlite)
+      library(tidyverse)
+      library(ggplot2)
+
+#Step 2 Anfrage stellen
+      
+      resp <- GET("https://api.open-meteo.com/v1/forecast?latitude=53.55&longitude=9.99&hourly=windspeed_10m")
+
+#Step 3 Daten für Windgeschwindigkeit auslesen
+
+      windspeed10m <- rawToChar(resp$content) %>% fromJSON()
+      
+      time <- windspeed10m[["hourly"]][1]
+      windspeed_10m <- windspeed10m[["hourly"]][2]
+      
+      Geschwindigkeitsdaten <- data.frame(time, windspeed_10m) %>% head(n = 40)
+      
+      
+#Step 4 Visualisierung
+      
+      Geschwindigkeitsdaten %>%
+        
+      ggplot(aes(x = time, y = windspeed_10m)) +
+      geom_col(fill = "#2DC6D6") + 
+
+      theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+      theme(axis.text.y = element_text(angle = 45, hjust = 1)) +
+        
+      labs(
+          title    = "Windgeschwindigkeiten in Hamburg",
+          subtitle = "Stündlich gemessen vom 28.04.2023 0:00 Uhr bis 29.04.2023 15:00 Uhr",
+          x = "Zeitpunkt der Messung",
+          y = "Windgeschwindigkeit in km/h"
+          )
+```
+
+::: callout-note
+Challenge 2 - Scraping
+:::
+
+```{r}
+
+#Step 1 Packages laden
+
+library(rvest)
+
+
+#Step 2 Daten "scrappen" (Entscheidung für Rennräder)
+
+  url <- "https://www.rosebikes.de/fahrr%C3%A4der/rennrad"
+  html <- url %>% 
+  read_html()
+
+  Modellbezeichnung <- html %>% 
+  html_nodes("h4.basic-headline__title") %>% 
+  html_text()
+
+  Preis <- html %>% 
+  html_nodes("div.catalog-category-bikes__price-title") %>% 
+  html_text() %>% 
+  parse_number(locale = locale(decimal_mark = ",", grouping_mark = "."))
+
+#Step 3 Daten in lesbares Format überführen
+  
+Uebersichtstabelle <- data.frame(Modellbezeichnung, Preis)
+print(Uebersichtstabelle)
+
+```

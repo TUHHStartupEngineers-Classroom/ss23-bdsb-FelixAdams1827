@@ -1,0 +1,18 @@
+{
+  "hash": "f815196903a8212196f1e1020e7de910",
+  "result": {
+    "markdown": "---\ntitle: \"Data Acquisition\"\nauthor: \"**Felix Adamaszek**, *Matr. Nr. 52505*\"\n---\n\n\n::: callout-note\nChallenge 1 - API\n:::\n\n\n![Windgeschwindigkeiten in Hamburg](../../content/01_journal/02_data_acquisition_files/figure-html/unnamed-chunk-1-1.png)\n\n::: {.cell hash='02_data_acquisition_cache/html/unnamed-chunk-1_2eeefc7f6491744fc961096e957f3970'}\n\n```{.r .cell-code}\n#Step 1 Packages laden\n\n      library(httr)\n      library(jsonlite)\n      library(tidyverse)\n      library(ggplot2)\n\n#Step 2 Anfrage stellen\n      \n      resp <- GET(\"https://api.open-meteo.com/v1/forecast?latitude=53.55&longitude=9.99&hourly=windspeed_10m\")\n\n#Step 3 Daten für Windgeschwindigkeit auslesen\n\n      windspeed10m <- rawToChar(resp$content) %>% fromJSON()\n      \n      time <- windspeed10m[[\"hourly\"]][1]\n      windspeed_10m <- windspeed10m[[\"hourly\"]][2]\n      \n      Geschwindigkeitsdaten <- data.frame(time, windspeed_10m) %>% head(n = 40)\n      \n      \n#Step 4 Visualisierung\n      \n      Geschwindigkeitsdaten %>%\n        \n      ggplot(aes(x = time, y = windspeed_10m)) +\n      geom_col(fill = \"#2DC6D6\") + \n\n      theme(axis.text.x = element_text(angle = 45, hjust = 1)) +\n      theme(axis.text.y = element_text(angle = 45, hjust = 1)) +\n        \n      labs(\n          title    = \"Windgeschwindigkeiten in Hamburg\",\n          subtitle = \"Stündlich gemessen vom 28.04.2023 0:00 Uhr bis 29.04.2023 15:00 Uhr\",\n          x = \"Zeitpunkt der Messung\",\n          y = \"Windgeschwindigkeit in km/h\"\n          )\n```\n\n::: {.cell-output-display}\n![](02_data_acquisition_files/figure-html/unnamed-chunk-1-1.png){width=672}\n:::\n:::\n\n\n::: callout-note\nChallenge 2 - Scraping\n:::\n\n\n::: {.cell hash='02_data_acquisition_cache/html/unnamed-chunk-2_aa4945474acc61d1997e8b0fc1a32ede'}\n\n```{.r .cell-code}\n#Step 1 Packages laden\n\nlibrary(rvest)\n```\n\n::: {.cell-output .cell-output-stderr}\n```\n#> \n#> Attaching package: 'rvest'\n```\n:::\n\n::: {.cell-output .cell-output-stderr}\n```\n#> The following object is masked from 'package:readr':\n#> \n#>     guess_encoding\n```\n:::\n\n```{.r .cell-code}\n#Step 2 Daten \"scrappen\" (Entscheidung für Rennräder)\n\n  url <- \"https://www.rosebikes.de/fahrr%C3%A4der/rennrad\"\n  html <- url %>% \n  read_html()\n\n  Modellbezeichnung <- html %>% \n  html_nodes(\"h4.basic-headline__title\") %>% \n  html_text()\n\n  Preis <- html %>% \n  html_nodes(\"div.catalog-category-bikes__price-title\") %>% \n  html_text() %>% \n  parse_number(locale = locale(decimal_mark = \",\", grouping_mark = \".\"))\n\n#Step 3 Daten in lesbares Format überführen\n  \nUebersichtstabelle <- data.frame(Modellbezeichnung, Preis)\nprint(Uebersichtstabelle)\n```\n\n::: {.cell-output .cell-output-stdout}\n```\n#>   Modellbezeichnung Preis\n#> 1             XLITE  2999\n#> 2       REVEAL PLUS  3999\n#> 3            PRO SL  1099\n#> 4            REVEAL  2499\n```\n:::\n:::",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {
+      "include-in-header": [
+        "<link href=\"../../site_libs/pagedtable-1.1/css/pagedtable.css\" rel=\"stylesheet\" />\n<script src=\"../../site_libs/pagedtable-1.1/js/pagedtable.js\"></script>\n"
+      ]
+    },
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}
